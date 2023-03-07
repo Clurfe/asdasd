@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  # push:
+  #   branches: 
+  #       - "master"
+
+  schedule:
+    - cron: '15 14 * * *'
+  workflow_dispatch:
+
+env:
+  CONFL: ${{ secrets.CONFL }}
+  DEBIAN_FRONTEND: noninteractive
+
+jobs:
+  build:
+
+    defaults:
+      run:
+        shell: bash
+
+    timeout-minutes: 360
+    
+    strategy:
+
+      fail-fast: false
+
+    name: runner
+    
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/setup-python@v4
+        name: Setup python
+        id: python
+        with:
+          python-version: "3.8"
+
+      - uses: browser-actions/setup-chrome@v1
+        name: Setup chrome
+        # with:
+          # chrome-version: stable
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: prep
+        run: |
+          chmod +x prep.sh
+          ./prep.sh
+
+      # - name: gen
+      #   run: |
+      #     chmod +x gen.sh
+      #     ./gen.sh
+
+      - name: run
+        run: |
+          chmod +x run.sh
+          ./run.sh
