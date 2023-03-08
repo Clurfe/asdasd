@@ -5,8 +5,8 @@ on:
   #   branches: 
   #       - "master"
 
-  schedule:
-    - cron: '15 14 * * *'
+  # schedule:
+  #   - cron: '15 14 * * *'
   workflow_dispatch:
 
 env:
@@ -26,7 +26,12 @@ jobs:
 
       fail-fast: false
 
-    name: runner
+      matrix:
+        config:
+          - prefix: ""
+          - prefix: "_v2"
+
+    name: runner${{ matrix.config.prefix }}
     
     runs-on: ubuntu-22.04
 
@@ -48,12 +53,12 @@ jobs:
       - name: prep
         run: |
           chmod +x prep.sh
-          ./prep.sh
+          ./prep.sh "${{ matrix.config.prefix }}"
 
-      # - name: gen
-      #   run: |
-      #     chmod +x gen.sh
-      #     ./gen.sh
+      - name: gen
+        run: |
+          chmod +x gen.sh
+          ./gen.sh "${{ matrix.config.prefix }}"
 
       - name: run
         run: |

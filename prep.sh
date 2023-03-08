@@ -3,12 +3,18 @@ if [[ ! -z "${CONFL}" ]];then
     git clone https://github.com/MShawon/YouTube-Viewer.git --depth 10
     cd YouTube-Viewer
     pip3 install -r requirements.txt
+    GETIT="${@}"
     for asu in config.json urls.txt search.txt
     do
         rm -rf $asu
-        wget ${CONFL}/$asu -O $asu
+        if [[ ! -z "${GETIT}" ]];then
+            filename="$(echo "${asu}" |awk -F '.' '{print $1}')"
+            ext="$(echo "${asu}" |awk -F '.' '{print $2}')"
+            wget "${CONFL}/${filename}${GETIT}.${ext}" -O $asu
+        else
+            wget ${CONFL}/$asu -O $asu
+        fi
     done 
-    wget https://raw.githubusercontent.com/Clurfe/prox-gen/master/result-checked.txt -O GoodProxy.txt
 else
     echo "config null?"
 fi
